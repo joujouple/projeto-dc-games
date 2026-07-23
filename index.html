@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC GAMES - 10 Heróis + 5 Jogos Completos</title>
+    <style>
+        :root {
+            --primary-blue: #0066ff;
+            --primary-red: #ff0000;
+            --primary-yellow: #ffcc00;
+            --dark-bg: #0a0e27;
+            --darker-bg: #050810;
+            --glass-bg: rgba(15, 20, 45, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b8d4;
+            --accent-neon: #00ffff;
+            --accent-purple: #9d4edd;
+            --accent-green: #00ff00;
+            --success: #00ff00;
+            --danger: #ff0000;
+            --warning: #ffcc00;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; font-family: 'Arial', sans-serif; background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%); color: var(--text-primary); overflow-x: hidden; }
+        
+        h1 { font-size: 3rem; color: var(--accent-neon); text-transform: uppercase; letter-spacing: 3px; text-align: center; text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+        h2 { font-size: 2rem; color: var(--primary-blue); margin: 1.5rem 0 1rem 0; }
+        h3 { color: var(--accent-neon); }
+        p { line-height: 1.6; color: var(--text-secondary); }
+
+        button, .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-neon) 100%); color: var(--dark-bg); box-shadow: 0 0 20px rgba(0, 102, 255, 0.5); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0, 102, 255, 0.8); }
+        .btn-secondary { background: linear-gradient(135deg, var(--accent-purple) 0%, var(--primary-red) 100%); color: white; }
+        .btn-secondary:hover { transform: translateY(-2px); }
+        .btn-large { padding: 16px 32px; font-size: 1.2rem; width: 100%; }
+
+        .screen { width: 100%; min-height: 100vh; padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.5s ease-out; }
+        .hidden { display: none !important; }
+
+        .login-card, .cadastro-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 500px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); }
+        
+        input, select { width: 100%; padding: 12px; margin: 0.5rem 0; border: 2px solid rgba(0, 255, 255, 0.3); border-radius: 8px; background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; }
+        input:focus, select:focus { outline: none; border-color: var(--accent-neon); box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); }
+        label { display: block; margin-top: 1rem; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: bold; }
+
+        .heroes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin: 2rem 0; width: 100%; max-width: 1000px; }
+        .hero-card { background: var(--glass-bg); border: 2px solid rgba(0, 255, 255, 0.2); padding: 1.5rem; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .hero-card:hover { border-color: var(--accent-neon); transform: translateY(-5px); box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); }
+        .hero-card.selected { border-color: var(--accent-neon); background: rgba(0, 255, 255, 0.1); box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+        .hero-emoji { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+        .hero-name { font-weight: bold; color: var(--accent-neon); }
+
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 2rem 0; width: 100%; max-width: 1000px; }
+        .game-card { background: var(--glass-bg); border: 2px solid rgba(0, 255, 255, 0.2); padding: 1.5rem; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .game-card:hover { border-color: var(--accent-neon); transform: translateY(-5px); }
+        .game-emoji { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+
+        .menu-container { width: 100%; max-width: 1000px; }
+        .menu-header { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; width: 100%; }
+        .player-avatar { width: 80px; height: 80px; background: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; width: 100%; }
+        .menu-btn { background: var(--glass-bg); border: 1px solid rgba(0, 255, 255, 0.2); padding: 2rem; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; color: white; font-size: 2rem; }
+        .menu-btn:hover { border-color: var(--accent-neon); transform: translateY(-5px); }
+
+        .game-container { width: 100%; max-width: 900px; background: var(--glass-bg); padding: 2rem; border-radius: 16px; text-align: center; }
+        
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; max-width: 500px; margin: 2rem auto; }
+        .memory-card { aspect-ratio: 1; background: var(--primary-blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; border: 2px solid rgba(0, 255, 255, 0.3); transition: 0.3s; }
+        .memory-card:hover { border-color: var(--accent-neon); }
+        .memory-card.flipped { background: white; color: black; }
+
+        #flight-canvas { background: #000; border: 2px solid var(--accent-neon); width: 100%; max-width: 700px; height: 450px; margin: 1rem auto; display: block; }
+
+        .quiz-question { background: rgba(0, 255, 255, 0.1); padding: 2rem; border-radius: 12px; margin: 1rem 0; text-align: left; }
+        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        .quiz-option { background: rgba(0, 255, 255, 0.1); border: 2px solid rgba(0, 255, 255, 0.2); padding: 1rem; border-radius: 8px; cursor: pointer; text-align: center; transition: 0.3s; }
+        .quiz-option:hover { border-color: var(--accent-neon); }
+        .quiz-option.correct { background: rgba(0, 255, 0, 0.2); border-color: var(--success); }
+        .quiz-option.wrong { background: rgba(255, 0, 0, 0.2); border-color: var(--danger); }
+
+        .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .loader { width: 50px; height: 50px; border: 4px solid rgba(0, 255, 255, 0.2); border-top: 4px solid var(--accent-neon); border-radius: 50%; animation: rotate 1s linear infinite; margin: 2rem auto; }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); } 50% { text-shadow: 0 0 40px rgba(0, 255, 255, 0.8); } }
+
+        h1 { animation: glow 2s infinite; }
+
+        .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        .container { max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .heroes-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+            .games-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+            .memory-grid { grid-template-columns: repeat(3, 1fr); }
+            .quiz-options { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen" class="splash-screen">
+        <div style="text-align: center;">
+            <h1>DC GAMES</h1>
+            <p style="text-align: center; color: var(--text-secondary); font-size: 1.2rem;">Universo DC Comics</p>
+            <div class="loader"></div>
+            <p style="text-align: center; color: var(--text-secondary); margin-top: 2rem;">Carregando Universo...</p>
+        </div>
+    </div>
+
+    <div id="app-container" class="hidden">
+        <!-- LOGIN -->
+        <div id="login-screen" class="screen">
+            <div class="login-card">
+                <h1>DC GAMES</h1>
+                <p class="subtitle">Bem-vindo ao Universo DC Comics</p>
+                <form id="login-form">
+                    <label>👤 Usuário</label>
+                    <input type="text" id="login-username" placeholder="Digite seu usuário" required>
+                    <label>🔐 Senha</label>
+                    <input type="password" id="login-password" placeholder="Digite sua senha" required>
+                    <button type="submit" class="btn btn-primary btn-large" style="margin-top: 2rem;">ENTRAR</button>
+                </form>
+                <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+                    Não tem conta? <a href="#" onclick="showScreen('cadastro-screen')" style="color: var(--accent-neon); cursor: pointer;">Cadastre-se aqui</a>
+                </p>
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+                    Demo: admin / 123456
+                </p>
+            </div>
+        </div>
+
+        <!-- CADASTRO -->
+        <div id="cadastro-screen" class="screen hidden">
+            <div class="cadastro-card">
+                <h2>Criar Nova Conta</h2>
+                <form id="cadastro-form">
+                    <label>Nome Completo</label>
+                    <input type="text" id="cad-name" placeholder="Seu nome" required>
+                    <label>Usuário</label>
+                    <input type="text" id="cad-user" placeholder="Escolha um usuário" required>
+                    <label>Email</label>
+                    <input type="email" id="cad-email" placeholder="seu@email.com" required>
+                    <label>Senha</label>
+                    <input type="password" id="cad-pass" placeholder="Mínimo 6 caracteres" required>
+                    <label>Confirmar Senha</label>
+                    <input type="password" id="cad-pass2" placeholder="Confirme a senha" required>
+                    <button type="submit" class="btn btn-primary btn-large" style="margin-top: 2rem;">CADASTRAR</button>
+                </form>
+                <p style="text-align: center; margin-top: 1.5rem;">
+                    Já tem conta? <a href="#" onclick="showScreen('login-screen')" style="color: var(--accent-neon); cursor: pointer;">Faça login</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- SELEÇÃO DE HERÓI -->
+        <div id="hero-screen" class="screen hidden">
+            <div class="container">
+                <h1>Escolha seu Herói</h1>
+                <p class="subtitle">Cada herói possui habilidades únicas</p>
+                <div id="heroes-grid" class="heroes-grid"></div>
+                <div id="hero-details" class="hidden" style="background: var(--glass-bg); padding: 2rem; border-radius: 12px; margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; text-align: center;">
+                    <h2 id="det-name"></h2>
+                    <p id="det-real" style="color: var(--text-secondary); margin-bottom: 1rem;"></p>
+                    <p id="det-desc" style="margin-bottom: 1.5rem;"></p>
+                    <p id="det-ability" style="background: rgba(0, 255, 255, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;"></p>
+                    <div id="det-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;"></div>
+                    <button class="btn btn-primary" onclick="confirmHero()">CONFIRMAR ESCOLHA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENU PRINCIPAL -->
+        <div id="menu-screen" class="screen hidden">
+            <div class="menu-container">
+                <div class="menu-header">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="player-avatar" id="menu-avatar">🦇</div>
+                        <div>
+                            <h3 id="menu-name" style="margin: 0;">Jogador</h3>
+                            <p id="menu-level" style="color: var(--accent-neon); margin: 0;">Nível 1</p>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 0.5rem 0;">💰 Moedas: <span id="menu-coins" style="color: var(--primary-yellow); font-weight: bold;">0</span></p>
+                        <p style="margin: 0.5rem 0;">🏆 Score: <span id="menu-score" style="color: var(--accent-neon); font-weight: bold;">0</span></p>
+                    </div>
+                </div>
+                <div class="menu-grid">
+                    <div class="menu-btn" onclick="showScreen('game-selection-screen')" title="Jogar">🎮<br><small>JOGAR</small></div>
+                    <div class="menu-btn" onclick="showProfile()" title="Perfil">👤<br><small>PERFIL</small></div>
+                    <div class="menu-btn" onclick="showRanking()" title="Ranking">🏆<br><small>RANKING</small></div>
+                    <div class="menu-btn" onclick="showSettings()" title="Configurações">⚙️<br><small>CONFIG</small></div>
+                    <div class="menu-btn" onclick="logout()" title="Sair">🚪<br><small>SAIR</small></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SELEÇÃO DE JOGO -->
+        <div id="game-selection-screen" class="screen hidden">
+            <div class="container">
+                <h1>Escolha um Jogo</h1>
+                <p class="subtitle">5 Jogos Incríveis do Universo DC</p>
+                <div class="games-grid">
+                    <div class="game-card" onclick="startGame('memory')">
+                        <span class="game-emoji">🧠</span>
+                        <strong>Batman Memory</strong>
+                        <p style="font-size: 0.85rem;">Jogo da Memória</p>
+                    </div>
+                    <div class="game-card" onclick="startGame('flight')">
+                        <span class="game-emoji">🦸</span>
+                        <strong>Superman Flight</strong>
+                        <p style="font-size: 0.85rem;">Desvie de Meteoros</p>
+                    </div>
+                    <div class="game-card" onclick="startGame('runner')">
+                        <span class="game-emoji">⚡</span>
+                        <strong>Flash Runner</strong>
+                        <p style="font-size: 0.85rem;">Runner Infinito</p>
+                    </div>
+                    <div class="game-card" onclick="startGame('quiz')">
+                        <span class="game-emoji">⚡✨</span>
+                        <strong>Shazam Quiz</strong>
+                        <p style="font-size: 0.85rem;">Quiz Desafiador</p>
+                    </div>
+                    <div class="game-card" onclick="startGame('shooter')">
+                        <span class="game-emoji">💚</span>
+                        <strong>GL Shooter</strong>
+                        <p style="font-size: 0.85rem;">Atirador</p>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="showScreen('menu-screen')" style="margin-top: 2rem;">VOLTAR</button>
+            </div>
+        </div>
+
+        <!-- JOGO: MEMORY -->
+        <div id="game-memory" class="screen hidden">
+            <div class="game-container">
+                <h2>🧠 Batman Memory</h2>
+                <p>Pares encontrados: <span id="mem-count">0</span>/8 | Score: <span id="mem-score">0</span></p>
+                <div id="mem-grid" class="memory-grid"></div>
+                <button class="btn btn-secondary" onclick="stopGame()">SAIR</button>
+            </div>
+        </div>
+
+        <!-- JOGO: FLIGHT -->
+        <div id="game-flight" class="screen hidden">
+            <div class="game-container">
+                <h2>🦸 Superman Flight</h2>
+                <p>Score: <span id="fli-score">0</span> | Vidas: <span id="fli-lives">3</span></p>
+                <canvas id="flight-canvas"></canvas>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">Use as SETAS para mover</p>
+                <button class="btn btn-secondary" onclick="stopGame()">SAIR</button>
+            </div>
+        </div>
+
+        <!-- JOGO: RUNNER -->
+        <div id="game-runner" class="screen hidden">
+            <div class="game-container">
+                <h2>⚡ Flash Runner</h2>
+                <p>Score: <span id="run-score">0</span> | Distância: <span id="run-dist">0</span>m</p>
+                <canvas id="runner-canvas" style="background: #000; border: 2px solid var(--accent-neon); width: 100%; max-width: 700px; height: 300px; display: block; margin: 1rem auto;"></canvas>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">Pressione ESPAÇO para pular</p>
+                <button class="btn btn-secondary" onclick="stopGame()">SAIR</button>
+            </div>
+        </div>
+
+        <!-- JOGO: QUIZ -->
+        <div id="game-quiz" class="screen hidden">
+            <div class="game-container">
+                <h2>⚡✨ Shazam Quiz</h2>
+                <p>Pergunta <span id="quiz-num">1</span>/10 | Score: <span id="quiz-score">0</span></p>
+                <div class="quiz-question">
+                    <h3 id="quiz-question">Pergunta aqui</h3>
+                    <div class="quiz-options" id="quiz-options"></div>
+                </div>
+                <button class="btn btn-secondary" onclick="stopGame()" style="margin-top: 2rem;">SAIR</button>
+            </div>
+        </div>
+
+        <!-- JOGO: SHOOTER -->
+        <div id="game-shooter" class="screen hidden">
+            <div class="game-container">
+                <h2>💚 Green Lantern Shooter</h2>
+                <p>Score: <span id="shoot-score">0</span> | Inimigos: <span id="shoot-enemies">0</span></p>
+                <canvas id="shooter-canvas" style="background: #000; border: 2px solid var(--accent-neon); width: 100%; max-width: 700px; height: 400px; display: block; margin: 1rem auto;"></canvas>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">Clique para atirar</p>
+                <button class="btn btn-secondary" onclick="stopGame()">SAIR</button>
+            </div>
+        </div>
+
+        <!-- PERFIL -->
+        <div id="profile-screen" class="screen hidden">
+            <div class="game-container">
+                <h2>👤 Meu Perfil</h2>
+                <div style="text-align: left; margin-top: 2rem;">
+                    <p><strong>Nome:</strong> <span id="prof-name"></span></p>
+                    <p><strong>Herói:</strong> <span id="prof-hero"></span></p>
+                    <p><strong>Nível:</strong> <span id="prof-level"></span></p>
+                    <p><strong>Score:</strong> <span id="prof-score"></span></p>
+                    <p><strong>Moedas:</strong> <span id="prof-coins"></span></p>
+                    <p><strong>Jogos Completados:</strong> <span id="prof-games"></span></p>
+                </div>
+                <button class="btn btn-secondary" onclick="showScreen('menu-screen')" style="margin-top: 2rem;">VOLTAR</button>
+            </div>
+        </div>
+
+        <!-- RANKING -->
+        <div id="ranking-screen" class="screen hidden">
+            <div class="game-container">
+                <h2>🏆 Ranking Global</h2>
+                <div id="ranking-list" style="text-align: left; margin-top: 2rem; max-height: 400px; overflow-y: auto;"></div>
+                <button class="btn btn-secondary" onclick="showScreen('menu-screen')" style="margin-top: 2rem;">VOLTAR</button>
+            </div>
+        </div>
+
+        <!-- CONFIGURAÇÕES -->
+        <div id="settings-screen" class="screen hidden">
+            <div class="game-container">
+                <h2>⚙️ Configurações</h2>
+                <div style="text-align: left; margin-top: 2rem;">
+                    <label>
+                        <input type="checkbox" id="music-toggle" checked> 🎵 Música
+                    </label>
+                    <label style="margin-top: 1rem;">
+                        <input type="checkbox" id="sound-toggle" checked> 🔊 Efeitos Sonoros
+                    </label>
+                    <label style="margin-top: 1rem;">
+                        <input type="checkbox" id="fullscreen-toggle"> 🖥️ Tela Cheia
+                    </label>
+                    <div style="margin-top: 2rem;">
+                        <button class="btn btn-danger" onclick="if(confirm('Tem certeza? Isso apagará todos os dados!')) { localStorage.clear(); alert('Dados apagados!'); location.reload(); }">RESETAR PROGRESSO</button>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="showScreen('menu-screen')" style="margin-top: 2rem;">VOLTAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // 10 HERÓIS DC COMICS
+        // ============================================
+        const HEROES = [
+            { id: 'batman', name: 'Batman', real: 'Bruce Wayne', emoji: '🦇', desc: 'O Cavaleiro das Trevas de Gotham', ability: 'Visão Noturna', speed: 85, strength: 80, intelligence: 95, defense: 90 },
+            { id: 'superman', name: 'Superman', real: 'Clark Kent', emoji: '🦸', desc: 'O Homem de Aço', ability: 'Força Kryptoniana', speed: 90, strength: 100, intelligence: 85, defense: 95 },
+            { id: 'wonder', name: 'Mulher-Maravilha', real: 'Diana Prince', emoji: '⭐', desc: 'Princesa Amazona', ability: 'Laço da Verdade', speed: 80, strength: 95, intelligence: 80, defense: 85 },
+            { id: 'flash', name: 'Flash', real: 'Barry Allen', emoji: '⚡', desc: 'O Homem Mais Rápido', ability: 'Velocidade Extrema', speed: 100, strength: 70, intelligence: 85, defense: 65 },
+            { id: 'lantern', name: 'Lanterna Verde', real: 'Hal Jordan', emoji: '💚', desc: 'Portador do Anel de Poder', ability: 'Construção de Energia', speed: 75, strength: 85, intelligence: 90, defense: 80 },
+            { id: 'aquaman', name: 'Aquaman', real: 'Arthur Curry', emoji: '🌊', desc: 'Rei dos Oceanos', ability: 'Tridente Atlântico', speed: 80, strength: 90, intelligence: 75, defense: 85 },
+            { id: 'cyborg', name: 'Ciborgue', real: 'Victor Stone', emoji: '🤖', desc: 'Metade Homem, Metade Máquina', ability: 'Amplificador Cibernético', speed: 85, strength: 90, intelligence: 95, defense: 95 },
+            { id: 'shazam', name: 'Shazam', real: 'Billy Batson', emoji: '⚡✨', desc: 'O Campeão Mágico', ability: 'Poder Mágico', speed: 85, strength: 95, intelligence: 80, defense: 80 },
+            { id: 'nightwing', name: 'Asa Noturna', real: 'Dick Grayson', emoji: '🌙', desc: 'O Acróbata Perfeito', ability: 'Acrobacia Perfeita', speed: 95, strength: 75, intelligence: 85, defense: 80 },
+            { id: 'arrow', name: 'Arqueiro Verde', real: 'Oliver Queen', emoji: '🏹', desc: 'O Arqueiro Perfeito', ability: 'Flecha Explosiva', speed: 80, strength: 75, intelligence: 90, defense: 70 }
+        ];
+
+        // ============================================
+        // QUIZ QUESTIONS
+        // ============================================
+        const QUIZ_QUESTIONS = [
+            { q: 'Qual é o nome real do Batman?', options: ['Bruce Wayne', 'Clark Kent', 'Arthur Curry', 'Barry Allen'], answer: 0 },
+            { q: 'De onde vem a força do Superman?', options: ['Magia', 'Radiação Kryptoniana', 'Tecnologia', 'Treino'], answer: 1 },
+            { q: 'Qual herói é o mais rápido?', options: ['Batman', 'Superman', 'Flash', 'Aquaman'], answer: 2 },
+            { q: 'Qual é a arma de Mulher-Maravilha?', options: ['Espada', 'Laço da Verdade', 'Escudo', 'Lança'], answer: 1 },
+            { q: 'Quem é o Rei dos Oceanos?', options: ['Flash', 'Aquaman', 'Superman', 'Batman'], answer: 1 },
+            { q: 'Qual herói é metade máquina?', options: ['Shazam', 'Ciborgue', 'Lanterna Verde', 'Asa Noturna'], answer: 1 },
+            { q: 'Qual é a cor do anel de Lanterna Verde?', options: ['Vermelho', 'Azul', 'Verde', 'Amarelo'], answer: 2 },
+            { q: 'Qual herói usa um arco?', options: ['Arqueiro Verde', 'Batman', 'Flash', 'Superman'], answer: 0 },
+            { q: 'Quem é Asa Noturna?', options: ['Bruce Wayne', 'Dick Grayson', 'Clark Kent', 'Barry Allen'], answer: 1 },
+            { q: 'Qual herói é um campeão mágico?', options: ['Batman', 'Superman', 'Shazam', 'Aquaman'], answer: 2 }
+        ];
+
+        // ============================================
+        // ESTADO GLOBAL
+        // ============================================
+        let currentUser = null;
+        let selectedHero = null;
+        let gameActive = false;
+        let gameScore = 0;
+        let users = JSON.parse(localStorage.getItem('dcgames_users')) || [];
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                checkLogin();
+            }, 2000);
+
+            renderHeroes();
+            setupListeners();
+        };
+
+        function checkLogin() {
+            const saved = localStorage.getItem('dcgames_currentUser');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                selectedHero = HEROES.find(h => h.id === currentUser.heroId);
+                loadMenu();
+                showScreen('menu-screen');
+            } else {
+                showScreen('login-screen');
+            }
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function setupListeners() {
+            document.getElementById('login-form').onsubmit = (e) => {
+                e.preventDefault();
+                const user = document.getElementById('login-username').value;
+                const pass = document.getElementById('login-password').value;
+                
+                if (user === 'admin' && pass === '123456') {
+                    currentUser = { name: 'Admin', username: user, coins: 1000, score: 5000, level: 5, games: 15, heroId: null };
+                    localStorage.setItem('dcgames_currentUser', JSON.stringify(currentUser));
+                    showScreen('hero-screen');
+                } else {
+                    const found = users.find(u => u.username === user && u.password === pass);
+                    if (found) {
+                        currentUser = found;
+                        localStorage.setItem('dcgames_currentUser', JSON.stringify(currentUser));
+                        selectedHero = HEROES.find(h => h.id === currentUser.heroId);
+                        loadMenu();
+                        showScreen('menu-screen');
+                    } else {
+                        alert('Usuário ou senha incorretos!');
+                    }
+                }
+            };
+
+            document.getElementById('cadastro-form').onsubmit = (e) => {
+                e.preventDefault();
+                const name = document.getElementById('cad-name').value;
+                const user = document.getElementById('cad-user').value;
+                const email = document.getElementById('cad-email').value;
+                const pass = document.getElementById('cad-pass').value;
+                const pass2 = document.getElementById('cad-pass2').value;
+
+                if (pass !== pass2) {
+                    alert('Senhas não conferem!');
+                    return;
+                }
+
+                if (users.find(u => u.username === user)) {
+                    alert('Usuário já existe!');
+                    return;
+                }
+
+                const newUser = { name, username: user, email, password: pass, coins: 0, score: 0, level: 1, games: 0, heroId: null };
+                users.push(newUser);
+                localStorage.setItem('dcgames_users', JSON.stringify(users));
+                alert('Conta criada com sucesso! Faça login.');
+                showScreen('login-screen');
+            };
+        }
+
+        // ============================================
+        // HERÓIS
+        // ============================================
+        function renderHeroes() {
+            const grid = document.getElementById('heroes-grid');
+            grid.innerHTML = '';
+            HEROES.forEach(h => {
+                const card = document.createElement('div');
+                card.className = 'hero-card';
+                card.innerHTML = `<span class="hero-emoji">${h.emoji}</span><div class="hero-name">${h.name}</div>`;
+                card.onclick = () => selectHeroCard(h, card);
+                grid.appendChild(card);
+            });
+        }
+
+        function selectHeroCard(hero, card) {
+            selectedHero = hero;
+            document.querySelectorAll('.hero-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+
+            const details = document.getElementById('hero-details');
+            details.classList.remove('hidden');
+            document.getElementById('det-name').innerText = hero.name;
+            document.getElementById('det-real').innerText = hero.real;
+            document.getElementById('det-desc').innerText = hero.desc;
+            document.getElementById('det-ability').innerText = '⚡ ' + hero.ability;
+
+            const stats = document.getElementById('det-stats');
+            stats.innerHTML = `
+                <div style="background: rgba(0, 255, 255, 0.1); padding: 1rem; border-radius: 8px;">
+                    <strong>Velocidade</strong><br><span style="color: var(--accent-neon);">${hero.speed}</span>
+                </div>
+                <div style="background: rgba(0, 255, 255, 0.1); padding: 1rem; border-radius: 8px;">
+                    <strong>Força</strong><br><span style="color: var(--accent-neon);">${hero.strength}</span>
+                </div>
+                <div style="background: rgba(0, 255, 255, 0.1); padding: 1rem; border-radius: 8px;">
+                    <strong>Inteligência</strong><br><span style="color: var(--accent-neon);">${hero.intelligence}</span>
+                </div>
+                <div style="background: rgba(0, 255, 255, 0.1); padding: 1rem; border-radius: 8px;">
+                    <strong>Defesa</strong><br><span style="color: var(--accent-neon);">${hero.defense}</span>
+                </div>
+            `;
+        }
+
+        function confirmHero() {
+            if (!selectedHero) {
+                alert('Selecione um herói!');
+                return;
+            }
+            currentUser.heroId = selectedHero.id;
+            localStorage.setItem('dcgames_currentUser', JSON.stringify(currentUser));
+            loadMenu();
+            showScreen('menu-screen');
+        }
+
+        // ============================================
+        // MENU
+        // ============================================
+        function loadMenu() {
+            document.getElementById('menu-name').innerText = currentUser.name;
+            document.getElementById('menu-level').innerText = `Nível ${currentUser.level}`;
+            document.getElementById('menu-coins').innerText = currentUser.coins;
+            document.getElementById('menu-score').innerText = currentUser.score;
+            document.getElementById('menu-avatar').innerText = selectedHero ? selectedHero.emoji : '🦇';
+        }
+
+        // ============================================
+        // JOGOS
+        // ============================================
+        function startGame(type) {
+            gameActive = true;
+            gameScore = 0;
+            if (type === 'memory') startMemory();
+            if (type === 'flight') startFlight();
+            if (type === 'runner') startRunner();
+            if (type === 'quiz') startQuiz();
+            if (type === 'shooter') startShooter();
+        }
+
+        function stopGame() {
+            gameActive = false;
+            showScreen('menu-screen');
+        }
+
+        // --- MEMORY ---
+        function startMemory() {
+            showScreen('game-memory');
+            const grid = document.getElementById('mem-grid');
+            grid.innerHTML = '';
+            let icons = ['🦇','🦇','🦸','🦸','⚡','⚡','⭐','⭐','🏙️','🏙️','🚗','🚗','💣','💣','🎭','🎭'];
+            icons = icons.sort(() => Math.random() - 0.5);
+            
+            let flipped = [];
+            let matched = 0;
+            gameScore = 0;
+
+            icons.forEach((icon) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.innerText = '?';
+                card.onclick = () => {
+                    if (flipped.length < 2 && !card.classList.contains('flipped')) {
+                        card.innerText = icon;
+                        card.classList.add('flipped');
+                        flipped.push({ icon, card });
+
+                        if (flipped.length === 2) {
+                            if (flipped[0].icon === flipped[1].icon) {
+                                matched++;
+                                gameScore += 100;
+                                document.getElementById('mem-count').innerText = matched;
+                                document.getElementById('mem-score').innerText = gameScore;
+                                flipped = [];
+                                if (matched === 8) {
+                                    alert('🎉 Vitória! Score: ' + gameScore);
+                                    currentUser.coins += 50;
+                                    currentUser.score += gameScore;
+                                    currentUser.games++;
+                                    localStorage.setItem('dcgames_currentUser', JSON.stringify(currentUser));
+                                    loadMenu();
+                                    stopGame();
+                                }
+                            } else {
+                                setTimeout(() => {
+                                    flipped.forEach(f => {
+                                        f.card.innerText = '?';
+                                        f.card.classList.remove('flipped');
+                                    });
+                                    flipped = [];
+                                }, 1000);
+                            }
+                        }
+                    }
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        // --- FLIGHT ---
+        let flightActive = false;
+        function startFlight() {
+            showScreen('game-flight');
+            flightActive = true;
+            const canvas = document.getElementById('flight-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 700;
+            canvas.height = 450;
+
+            let player = { x: 50, y: 200, w: 30, h: 30 };
+            let obstacles = [];
+            gameScore = 0;
+            let lives = 3;
+            let frame = 0;
+
+            window.onkeydown = (e) => {
+                if (e.key === 'ArrowUp') player.y = Math.max(0, player.y - 30);
+                if (e.key === 'ArrowDown') player.y = Math.min(420, player.y + 30);
+            };
+
+            function loop() {
+                if (!flightActive) return;
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, 700, 450);
+                
+                ctx.font = "40px Arial";
+                ctx.fillText(selectedHero ? selectedHero.emoji : '🦸', player.x, player.y + 30);
+
+                if (frame % 40 === 0) obstacles.push({ x: 700, y: Math.random() * 400, w: 30, h: 30 });
+                
+                obstacles.forEach((o, i) => {
+                    o.x -= 8;
+                    ctx.fillText('☄️', o.x, o.y + 30);
+                    
+                    if (player.x < o.x + 30 && player.x + 30 > o.x && player.y < o.y + 30 && player.y + 30 > o.y) {
+                        lives--;
+                        document.getElementById('fli-lives').innerText = lives;
+                        obstacles.splice(i, 1);
+                        if (lives <= 0) {
+                            alert('💀 Game Over! Score: ' + gameScore);
+                            currentUser.coins += Math.floor(gameScore / 100);
+                            currentUser.score += gameScore;
+                            currentUser.games++;
+                            localStorage.setItem('dcgames_currentUser', JSON.stringify(currentUser));
+                            loadMenu();
+                            flightActive = false;
+                            stopGame();
+                        }
+                    }
+                });
+
+                obstacles = obstacles.filter(o => o.x > -50);
+                gameScore += 5;
+                document.getElementById('fli-score').innerText = gameScore;
+                frame++;
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        // --- RUNNER ---
+        let runnerActive = false;
+        function startRunner() {
+            showScreen('game-runner');
+            runnerActive = true;
+            const canvas = document.getElementById('runner-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 700;
+            canvas.height = 300;
+
+            let player = { x: 50, y: 200, w: 30, h: 40, jumping: false, vy: 0 };
+            let obstacles = [];
+            gameScore = 0;
+            let distance = 0;
+            let frame = 0;
+
+            window.onkeydown = (e) => {
+                if (e.code === 'Space' && !player.jumping) {
+                    player.jumping = true;
+                    player.vy = -15;
+                }
+            };
+
+            function loop() {
+                if (!runnerActive) return;
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, 700, 300);
+
+                if (player.jumping) {
+                    player.vy += 0.6;
+                    player.y += player.vy;
+                    if (player.y >= 200) {
+                        player.y = 200;
+                        player.jumping = false;
+                    }
+                }
+
+                ctx.font = "40px Arial";
+                ctx.fillText(selectedHero ? selectedHero.emoji : '⚡', player.x, player.y + 30);
+
+                if (frame % 60 === 0) obstacles.push({ x: 700, y: 200, w: 30, h: 40 });
+                
+                obstacles.forEach((o, i) => {
+                    o.x -= 8;
+                    ctx.fillText('🚧', o.x, o.y + 30);
+                    
+                    if (player.x < o.x + 30 && player.x + 30 > o.x && player.y < o.y + 40 && player.y + 40 > o.y) {
+                        alert('💀 Game Over! Distância: ' + distance + 'm');
+                        currentUser.coins += Math.floor(gameScore / 100);
+                        currentUser.score += gameScore;
+                        currentUser.games++;
+                        localStorage.setItem('dcgames_currentUser', JSON.stringify(currentUser));
+                        loadMenu();
+                        runnerActive = false;
+                        stopGame();
+                    }
+                });
+
+                obstacles = obstacles.filter(o => o.x > -50);
+                gameScore += 10;
+                distance = Math.floor(gameScore / 10);
+                document.getElementById('run-score').innerText = gameScore;
+                document.getElementById('run-dist').innerText = distance;
+                frame++;
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        // --- QUIZ ---
+        let quizIndex = 0;
+        function startQuiz() {
+            showScreen('game-quiz');
+            quizIndex = 0;
+            gameScore = 0;
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            if (quizIndex >= QUIZ_QUESTIONS.length) {
+                alert('🎉 Quiz Finalizado! Score: ' + gameScore);
+                currentUser.coins += 100;
+                currentUser.score += gameScore;
+                currentUser.games++;
+                localStorage.setItem('dcgames_currentUser', JSON.stringify(currentUser));
+                loadMenu();
+                stopGame();
+                return;
+            }
+
+            const q = QUIZ_QUESTIONS[quizIndex];
+            document.getElementById('quiz-num').innerText = quizIndex + 1;
+            document.getElementById('quiz-question').innerText = q.q;
+            document.getElementById('quiz-score').innerText = gameScore;
+
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (i === q.answer) {
+                        gameScore += 100;
+                        btn.classList.add('correct');
+                        setTimeout(() => {
+                            quizIndex++;
+                            showQuizQuestion();
+                        }, 500);
+                    } else {
+                        btn.classList.add('wrong');
+                        setTimeout(() => {
+                            quizIndex++;
+                            showQuizQuestion();
+                        }, 500);
+                    }
+                };
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        // --- SHOOTER ---
+        let shooterActive = false;
+        function startShooter() {
+            showScreen('game-shooter');
+            shooterActive = true;
+            const canvas = document.getElementById('shooter-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 700;
+            canvas.height = 400;
+
+            let player = { x: 350, y: 350, w: 30, h: 30 };
+            let enemies = [];
+            let bullets = [];
+            gameScore = 0;
+            let frame = 0;
+
+            canvas.onmousemove = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                player.x = e.clientX - rect.left - 15;
+            };
+
+            canvas.onclick = () => {
+                bullets.push({ x: player.x + 15, y: 350, w: 5, h: 15 });
+            };
+
+            function loop() {
+                if (!shooterActive) return;
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, 700, 400);
+
+                ctx.font = "30px Arial";
+                ctx.fillText('💚', player.x, player.y);
+
+                if (frame % 50 === 0) enemies.push({ x: Math.random() * 650, y: 0, w: 30, h: 30 });
+
+                enemies.forEach((e, ei) => {
+                    e.y += 3;
+                    ctx.fillText('👾', e.x, e.y);
+
+                    bullets.forEach((b, bi) => {
+                        if (b.x < e.x + 30 && b.x + 5 > e.x && b.y < e.y + 30 && b.y + 15 > e.y) {
+                            gameScore += 50;
+                            enemies.splice(ei, 1);
+                            bullets.splice(bi, 1);
+                        }
+                    });
+
+                    if (e.y > 400) {
+                        alert('💀 Game Over! Score: ' + gameScore);
+                        currentUser.coins += Math.floor(gameScore / 50);
+                        currentUser.score += gameScore;
+                        currentUser.games++;
+                        localStorage.setItem('dcgames_currentUser', JSON.stringify(currentUser));
+                        loadMenu();
+                        shooterActive = false;
+                        stopGame();
+                    }
+                });
+
+                bullets.forEach((b, i) => {
+                    b.y -= 8;
+                    ctx.fillRect(b.x, b.y, b.w, b.h);
+                    if (b.y < 0) bullets.splice(i, 1);
+                });
+
+                document.getElementById('shoot-score').innerText = gameScore;
+                document.getElementById('shoot-enemies').innerText = enemies.length;
+                frame++;
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        // ============================================
+        // OUTRAS TELAS
+        // ============================================
+        function showProfile() {
+            document.getElementById('prof-name').innerText = currentUser.name;
+            document.getElementById('prof-hero').innerText = selectedHero ? selectedHero.name : 'Nenhum';
+            document.getElementById('prof-level').innerText = currentUser.level;
+            document.getElementById('prof-score').innerText = currentUser.score;
+            document.getElementById('prof-coins').innerText = currentUser.coins;
+            document.getElementById('prof-games').innerText = currentUser.games;
+            showScreen('profile-screen');
+        }
+
+        function showRanking() {
+            const ranking = [currentUser, ...users].sort((a, b) => b.score - a.score).slice(0, 10);
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = '';
+            ranking.forEach((u, i) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: rgba(0, 255, 255, 0.1); padding: 1rem; margin: 0.5rem 0; border-radius: 8px; display: flex; justify-content: space-between;';
+                div.innerHTML = `<span>${i + 1}º ${u.name}</span><span style="color: var(--accent-neon);">${u.score} pts</span>`;
+                list.appendChild(div);
+            });
+            showScreen('ranking-screen');
+        }
+
+        function showSettings() {
+            showScreen('settings-screen');
+        }
+
+        function logout() {
+            localStorage.removeItem('dcgames_currentUser');
+            currentUser = null;
+            selectedHero = null;
+            showScreen('login-screen');
+            document.getElementById('login-form').reset();
+        }
+    </script>
+</body>
+</html>
